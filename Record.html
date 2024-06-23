@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#ff0202">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Sistema de Seguimiento Academico,ssa,SSA, sistema academico umsa,UMSA">
+    <meta name="author" content="cpdiumsa">
+    <link rel="shortcut icon" href="img/icon.ico" />
+    <title>::SSA::Sistema de Seguimiento Academico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f4f7;
+            color: #333;
+            font-size: 14px;
+        }
+        .navbar {
+            background-color: #304c74;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed; /* Barra de navegación fija */
+            top: 0;
+            width: 100%;
+            z-index: 1000; /* Asegurar que la barra esté por encima de otros elementos */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            position: relative;
+            padding: 8px 12px;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 300; /* Letras más delgadas */
+        }
+        .navbar a:hover {
+            background-color: #1d3557;
+            color: #f1faee;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 150px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 3px;
+            font-size: 12px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dropdown-content a:hover {
+            background-color: #f0f4f7;
+            color: #304c74;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .container {
+            padding: 20px;
+            background-color: white;
+            margin: 70px 100px; /* Ajustado el margen superior para evitar superposición */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px; /* Bordes redondeados */
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            border-radius: 50%;
+            width: 100px; /* Duplicar tamaño de la imagen */
+            height: 100px; /* Duplicar tamaño de la imagen */
+        }
+        .header .info {
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-radius: 10px; /* Bordes redondeados */
+            font-size: 0.8em; /* Reducir tamaño del texto */
+            flex-grow: 1;
+            margin: 0 20px; /* Espaciado entre imágenes y texto */
+            line-height: 1.2;
+        }
+        .header .info p {
+            margin: 2px 0;
+        }
+        .record {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .record th, .record td {
+            padding: 8px; /* Aumentado el padding */
+            border-bottom: 1px solid #ddd; /* Solo línea inferior */
+        }
+        .record th {
+            background-color: #ffffff;
+            text-align: center; /* Centrar el texto */
+            text-transform: uppercase; /* Convertir a mayúsculas */
+        }
+        .record td, .semester-header {
+            text-align: left; /* Alinear a la izquierda */
+        }
+        .semester-header {
+            font-weight: bold;
+            background-color: #eeeeee;
+            color: #1d4e85; /* Color azul */
+            border-bottom: 1px solid #ddd; /* Solo línea inferior */
+        }
+        .summary {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-around;
+            background-color: #d3d3d3;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .summary p {
+            margin: 5px 0;
+        }
+        .btn {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px; /* Aumentado el padding */
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+            border-radius: 5px; /* Bordes redondeados */
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .user-menu {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* Mover la información del usuario a la derecha */
+        }
+        .user-menu img {
+            border-radius: 50%;
+            margin-left: 10px;
+            width: 30px;
+            height: 30px;
+        }
+        .navbar div:first-child {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap; /* Permitir envoltura de contenido */
+        }
+        .approved {
+            color: #006400; /* Verde oscuro */
+        }
+        .average {
+            color: #1d4e85; /* Azul claro */
+        }
+        .abandoned {
+            color: #ff0000; /* Rojo */
+        }
+        .reprobated {
+            color: #ff0000; /* Rojo */
+        }
+        .back-to-top {
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+            color: #1d4e85;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>
+            S.S.A.
+            <div style="margin-left: 20px;">
+                <div class="dropdown">
+                    <a href="#">Mis Documentos</a>
+                    <div class="dropdown-content">
+                        <a href="#">Historial</a>
+                        <a href="#">Record</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#">Administración Personal</a>
+                    <div class="dropdown-content">
+                        <a href="#">Actualizar Datos</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#">Inscripciones</a>
+                    <div class="dropdown-content">
+                        <a href="#">Inscripción Materias</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#">Seguridad</a>
+                    <div class="dropdown-content">
+                        <a href="#">Cambiar Contraseña</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="user-menu">
+            JOSUE RICARDO IRIARTE HUANCA RODRIGUEZ
+            <img src="img/Screenshot 2024-06-21 123231.png" alt="Foto de Usuario">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <img src="img/Screenshot 2024-06-21 123231.png" alt="Foto de Josue Ricardo Iriarte Huanca Rodriguez">
+            <div class="info">
+                <h1>RECORD ACADÉMICO</h1>
+                <p>Estudiante: IRIARTE HUANCA RODRIGUEZ JOSUE RICARDO</p>
+                <p>Cédula de Identidad No.: 9101092</p>
+                <p>Registro Universitario: 1822226</p>
+                <p>Pensum de Estudio 2023 Mención INGENIERÍA DE SISTEMAS</p>
+            </div>
+            <img src="img/UMSA-1.jpg" alt="Logotipo de UMSA">
+        </div>
+
+        <button class="btn">Generar Documento</button>
+
+        <table class="record">
+            <tr>
+                <th scope="col">Sigla</th>
+                <th scope="col">Materia</th>
+                <th scope="col">Nota</th>
+                <th scope="col">Periodo</th>
+                <th scope="col">Gestión</th>
+                <th scope="col">Folio</th>
+                <th scope="col">Libro</th>
+                <th scope="col">Observación</th>
+            </tr>
+            <tr>
+                <td class="semester-header" colspan="8">1 SEMESTRE</td>
+            </tr>
+            <tr>
+                <td>INF-111</td>
+                <td>PROGRAMACION I</td>
+                <td>70</td>
+                <td>CONVALIDACION PROVISIONAL</td>
+                <td>07/2023</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>INF-112</td>
+                <td>FUNDAMENTOS DIGITALES</td>
+                <td>74</td>
+                <td>CONVALIDACION PROVISIONAL</td>
+                <td>07/2023</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>INF-113</td>
+                <td>PROGRAMACION WEB I</td>
+                <td>93</td>
+                <td>CONVALIDACION PROVISIONAL</td>
+                <td>07/2023</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>INF-114</td>
+                <td>ÁLGEBRA</td>
+                <td>51</td>
+                <td>VERANO</td>
+                <td>2023</td>
+                <td>45</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>INF-115</td>
+                <td>CÁLCULO I</td>
+                <td>65</td>
+                <td>VERANO</td>
+                <td>2023</td>
+                <td>52</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>INF-116</td>
+                <td>FÍSICA</td>
+                <td>61</td>
+                <td>SEGUNDO</td>
+                <td>2023</td>
+                <td>359</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="semester-header" colspan="8">2 SEMESTRE</td>
+            </tr>
+            <tr>
+                <td>INF-121</td>
+                <td>PROGRAMACIÓN II</td>
+                <td>58</td>
+                <td>PRIMERO</td>
+                <td>2024</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td class="abandoned"></td>
+            </tr>
+            <tr>
+                <td>INF-122</td>
+                <td>PROGRAMACIÓN WEB II</td>
+                <td>52</td>
+                <td>PRIMERO</td>
+                <td>2024</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>INF-123</td>
+                <td>ELECTRONICA I</td>
+                <td>56</td>
+                <td>PRIMERO</td>
+                <td>2024</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td class="abandoned"></td>
+            </tr>
+            <tr>
+                <td>INF-125</td>
+                <td>ÁLGEBRA LINEAL</td>
+                <td>57</td>
+                <td>PRIMERO</td>
+                <td>2024</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>INF-126</td>
+                <td>CÁLCULO II</td>
+                <td>61</td>
+                <td>PRIMERO</td>
+                <td>2024</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td class="reprobated"></td>
+            </tr>
+            <tr>
+                <td class="semester-header" colspan="8">3 SEMESTRE</td>
+            </tr>
+            <tr>
+                <td>TRA-136</td>
+                <td>METODOLOGÍA DE LA INVESTIGACIÓN</td>
+                <td>67</td>
+                <td>CONVALIDACION PROVISIONAL</td>
+                <td>07/2023</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+        <div class="summary">
+            <p class="approved">APROBADAS: 12</p>
+            <p class="average">PROM. APROB: 63.75</p>
+        </div>
+
+        <a href="#top" class="back-to-top">Volver al Inicio</a>
+    </div>
+</body>
+</html>
+
